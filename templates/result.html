@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matching Faces</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Matching Faces</h1>
+
+        {% if message %}
+            <p class="message">{{ message }}</p>
+        {% else %}
+            <div class="gallery">
+                {% for match in matches %}
+                    <div class="image-card">
+                        <img src="{{ url_for('static', filename='photos/' + match) }}" alt="{{ match }}">
+                        <a class="download-btn" href="{{ url_for('static', filename='photos/' + match) }}" download>Save</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <a class="back-btn" href="/">Back to Home</a>
+    </div>
+</body>
+</html>

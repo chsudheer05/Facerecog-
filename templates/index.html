@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Recognition Upload</title>
+</head>
+<body>
+    <h1>Upload an Image</h1>
+
+    <!-- File Upload Form -->
+    <form method="POST" action="/upload" enctype="multipart/form-data">
+        <input type="file" name="image">
+        <input type="submit" value="Upload">
+    </form>
+
+    <h2>Or take a photo with your camera</h2>
+
+    <!-- Camera View -->
+    <video id="video" width="320" height="240" autoplay></video><br>
+    <button id="snap">Capture</button>
+    <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
+    <img id="preview" style="margin-top: 10px;"><br>
+
+    <!-- Camera Form -->
+    <form method="POST" action="/upload" id="cameraForm">
+        <input type="hidden" name="image" id="capturedImageInput">
+        <button type="submit">Submit Selfie</button>
+    </form>
+
+    <script>
+        const video = document.getElementById('video');
+        const snap = document.getElementById('snap');
+        const canvas = document.getElementById('canvas');
+        const preview = document.getElementById('preview');
+        const capturedImageInput = document.getElementById('capturedImageInput');
+
+        // Access webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            });
+
+        // Capture button click
+        snap.addEventListener('click', function (e) {
+            e.preventDefault();
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataURL = canvas.toDataURL('image/jpeg');
+            capturedImageInput.value = dataURL;
+            preview.src = dataURL;
+            preview.style.display = "block";
+        });
+    </script>
+</body>
+</html>
