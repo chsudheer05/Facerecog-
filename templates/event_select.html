@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Event</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+    }
+
+    /* Sticky Header (Logo Bar) */
+    .logo-bar {
+      background-color: #1f3c88;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .logo-bar span {
+      font-size: 40px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .happy-text {
+      color: white;  /* White color for Happy */
+      font-size: 60px;  /* Big size */
+      font-weight: bold;  /* Broad text */
+    }
+
+    .moments-text {
+      color: #ff6c00;  /* Orange color for Moments */
+      font-size: 60px;  /* Big size */
+      font-weight: bold;  /* Broad text */
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      height: 45px;
+      width: 45px;
+      border-radius: 50%;
+      background-color: white;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .brand .white {
+      color: white;
+    }
+
+    .brand .orange {
+      color: #f57c00;
+    }
+
+    /* Event Selection Card */
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 350px;
+      margin: 80px auto;
+      animation: fadeIn 1s ease-out;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #2575fc;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056d2;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sticky Header (Logo Bar) -->
+  <div class="logo-bar">
+    <span class="happy-text">Happy</span>
+    <span class="moments-text">Moments</span>
+  </div>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Logo" class="logo">
+      <div class="brand"><span class="white">Happy</span><span class="orange">Moments</span></div>
+    </div>
+  </header>
+
+  <!-- Event Selection Card -->
+  <div class="card">
+    <h1>Select an Event</h1>
+    <form method="POST" action="/select_event">
+      <select name="event" required>
+        {% for event in events %}
+          <option value="{{ event }}">{{ event }}</option>
+        {% endfor %}
+      </select>
+      <br>
+      <button type="submit">Continue</button>
+    </form>
+  </div>
+
+</body>
+</html>

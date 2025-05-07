@@ -1,55 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Face Recognition Upload</title>
+  <meta charset="UTF-8">
+  <title>Select Event</title>
+  <style>
+    body {
+      background: linear-gradient(to right, white, orange);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+    }
+
+    .logo-bar {
+      background-color: #1f3c88;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .happy-text {
+      color: white;
+      font-size: 60px;
+      font-weight: bold;
+    }
+
+    .moments-text {
+      color: #ff6c00;
+      font-size: 60px;
+      font-weight: bold;
+    }
+
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 350px;
+      margin: 80px auto;
+      animation: fadeIn 1s ease-out;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #2575fc;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056d2;
+    }
+
+    .dropdown {
+      position: relative;
+      background: white;
+      border: 1px solid #ddd;
+      max-height: 150px;
+      overflow-y: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+    }
+
+    .dropdown div {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .dropdown div:hover {
+      background-color: #f0f0f0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-    <h1>Upload an Image</h1>
+  <!-- Sticky Header -->
+  <div class="logo-bar">
+    <span class="happy-text">Happy</span>
+    <span class="moments-text">Moments</span>
+  </div>
 
-    <!-- File Upload Form -->
-    <form method="POST" action="/upload" enctype="multipart/form-data">
-        <input type="file" name="image">
-        <input type="submit" value="Upload">
+  <!-- Event Selection Card -->
+  <div class="card">
+    <h1>Select an Event</h1>
+    <form method="POST" action="/select_event">
+      <input type="text" id="eventInput" placeholder="Type to search event..." autocomplete="off" required>
+      <div id="eventList" class="dropdown"></div>
+      <input type="hidden" name="event" id="selectedEvent">
+      <br><br>
+      <button type="submit">Continue</button>
     </form>
+  </div>
 
-    <h2>Or take a photo with your camera</h2>
+  <script>
+    const events = {{ events|tojson }};
+    const input = document.getElementById('eventInput');
+    const dropdown = document.getElementById('eventList');
+    const hiddenInput = document.getElementById('selectedEvent');
 
-    <!-- Camera View -->
-    <video id="video" width="320" height="240" autoplay></video><br>
-    <button id="snap">Capture</button>
-    <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
-    <img id="preview" style="margin-top: 10px;"><br>
-
-    <!-- Camera Form -->
-    <form method="POST" action="/upload" id="cameraForm">
-        <input type="hidden" name="image" id="capturedImageInput">
-        <button type="submit">Submit Selfie</button>
-    </form>
-
-    <script>
-        const video = document.getElementById('video');
-        const snap = document.getElementById('snap');
-        const canvas = document.getElementById('canvas');
-        const preview = document.getElementById('preview');
-        const capturedImageInput = document.getElementById('capturedImageInput');
-
-        // Access webcam
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-            });
-
-        // Capture button click
-        snap.addEventListener('click', function (e) {
-            e.preventDefault();
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataURL = canvas.toDataURL('image/jpeg');
-            capturedImageInput.value = dataURL;
-            preview.src = dataURL;
-            preview.style.display = "block";
+    input.addEventListener('input', () => {
+      const value = input.value.trim().toLowerCase();
+      dropdown.innerHTML = '';
+      hiddenInput.value = ''; // clear previous value
+      if (value.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      const filtered = events.filter(event => event.toLowerCase().startsWith(value));
+      if (filtered.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      dropdown.style.display = 'block';
+      filtered.forEach(event => {
+        const div = document.createElement('div');
+        div.textContent = event;
+        div.addEventListener('click', () => {
+          input.value = event;
+          hiddenInput.value = event;
+          dropdown.innerHTML = '';
+          dropdown.style.display = 'none';
         });
-    </script>
+        dropdown.appendChild(div);
+      });
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
